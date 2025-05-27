@@ -1,3 +1,4 @@
+
 # stdx
 
 `stdx` is a minimalist, modular C99 utility library inspired by the STB style. It provides a set of dependency-free, single-header components that extend common programming functionality in C.
@@ -10,23 +11,23 @@
 - Components cover memory, data structures, filesystem, networking, threading, logging, and testing.
 
 ## Why
-1. No dependencies, easy integration
-  You just drop in one or more headers. No complicated setup, no linking external libraries. This is perfect for small or embedded projects, quick prototypes, or when you want maximum control over your build.
+1. **No dependencies, easy integration**
+You just drop in one or more headers. No complicated setup, no linking external libraries. Ideal for small or embedded projects, quick prototypes, or when you want maximum control over your build.
 
-2. Modular and selective
-  Use only what you need. Don’t pay a cost in compile time or binary size for features you don’t use. Each header is independent and can be compiled on-demand by defining the implementation macro.
+2. **Modular and selective**
+Use only what you need. Don’t pay a cost in compile time or binary size for features you don’t use. Each header is independent and can be compiled on-demand by defining the implementation macro.
 
-3. Portable C99 code
-  Written in plain C99, making it highly portable across platforms and compilers—even older or niche ones.
+3. **Portable C99 code**
+  Written in plain C99, making it highly portable across platforms and compilers.
 
-4. Reusable common utilities
-  It provides safe, tested implementations of common patterns like dynamic arrays, hash tables, string builders, arenas, logging, threading, and networking helpers. Instead of reinventing these, you get solid building blocks.
+4. **Reusable common utilities** 
+It provides safe, tested implementations of common patterns like dynamic arrays, hash tables, string builders, arenas, logging, threading, and networking helpers. Instead of reinventing these, you get solid building blocks.
 
-5. STB-style simplicity
-  No build systems or package managers required. Just include the header, define the implementation once, and compile. This style is very appealing for C programmers who want straightforward, easy-to-maintain code.
+5. **STB-style simplicity**
+No build systems or package managers required. Just include the header, define the implementation once, and compile. This style is very appealing for C programmers who want straightforward, easy-to-maintain code.
 
-6. Encourages clean architecture
-  Since each component is standalone, you can keep your codebase clean, include only what you need, and avoid unnecessary coupling.
+6. **Encourages clean architecture**
+Since each component is standalone, you can keep your codebase clean, include only what you need, and avoid unnecessary coupling.
 
 
 ## Modules
