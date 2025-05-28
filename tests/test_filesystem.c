@@ -119,7 +119,6 @@ int test_x_fs_path_split(void)
   ASSERT_TRUE(x_fs_path_compare_cstr(&components[1], "local") == 0);
   ASSERT_TRUE(x_fs_path_compare_cstr(&components[2], "bin") == 0);
   return 0;
-
 }
 
 int test_x_fs_path_exists(void)
@@ -136,12 +135,12 @@ int test_x_fs_path_equality(void)
 {
   XFSPath a = {0};
   x_fs_path(&a, "usr","local","bin");
-  ASSERT_TRUE(x_fs_path_eq_cstr(&a, "usr/local/bin/") == 0);
+  ASSERT_TRUE(x_fs_path_eq_cstr(&a, "usr/local/bin/"));
 
   XFSPath b = {0};
   x_fs_path(&b, "usr");
   x_fs_path_join(&b, "local", "bin");
-  ASSERT_TRUE(x_fs_path_eq(&a, &b) == 0);
+  ASSERT_TRUE(x_fs_path_eq(&a, &b));
   return 0;
 }
 
@@ -189,7 +188,7 @@ int test_x_fs_path_functions(void)
   XFSPath path;
   ASSERT_TRUE(x_fs_path(&path, "a", "b", "c"));
   x_fs_path_normalize(&path);
-  ASSERT_TRUE(x_fs_path_eq_cstr(&path, "a/b/c") == 0);
+  ASSERT_TRUE(x_fs_path_eq_cstr(&path, "a/b/c"));
   return 0;
 }
 

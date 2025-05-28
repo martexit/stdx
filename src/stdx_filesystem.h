@@ -37,13 +37,15 @@ extern "C"
 
 #define STDX_FILESYSTEM_VERSION (STDX_FILESYSTEM_VERSION_MAJOR * 10000 + STDX_FILESYSTEM_VERSION_MINOR * 100 + STDX_FILESYSTEM_VERSION_PATCH)
 
+
 #ifdef STDX_IMPLEMENTATION_FILESYSTEM
   #ifndef STDX_IMPLEMENTATION_STRING
     #define STDX_INTERNAL_STRING_IMPLEMENTATION
-  #define STDX_IMPLEMENTATION_STRING
-#endif
+    #define STDX_IMPLEMENTATION_STRING
+  #endif
 #endif
 #include <stdx_string.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
 
@@ -146,8 +148,8 @@ extern "C"
   size_t      x_fs_path_change_extension(XFSPath* path, const char* new_ext);
   int         x_fs_path_compare(const XFSPath* a, const XFSPath* b); // ignores separator type
   int         x_fs_path_compare_cstr(const XFSPath* a, const char* cstr); // ignores separator type
-  int         x_fs_path_eq(const XFSPath* a, const XSmallstr* b);  //TODO: Should return bool
-  int         x_fs_path_eq_cstr(const XFSPath* a, const char* b);  // TODO: should return bool
+  bool        x_fs_path_eq(const XFSPath* a, const XSmallstr* b);
+  bool        x_fs_path_eq_cstr(const XFSPath* a, const char* b);
   XStrview    x_fs_path_extension(const char* input);
   size_t      x_fs_path_from_strview(XStrview sv, XFSPath* out);
   size_t      x_fs_path_join_(XFSPath* path, ...);
@@ -199,22 +201,6 @@ extern "C"
 
 #ifdef STDX_IMPLEMENTATION_FILESYSTEM
 
-  struct XFSDirectoryHandle_t
-  {
-#ifdef _WIN32
-    HANDLE handle;
-    WIN32_FIND_DATA findData;
-#else
-    DIR* dir;
-    struct dirent* entry;
-    struct stat fileStat;
-#endif
-  }; 
-
-#ifdef _WIN32
-#else
-#endif
-
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
@@ -243,6 +229,36 @@ extern "C"
 #endif
 
 #include <time.h>
+
+  struct XFSDirectoryHandle_t
+  {
+#ifdef _WIN32
+    HANDLE handle;
+    WIN32_FIND_DATA findData;
+#else
+    DIR* dir;
+    struct dirent* entry;
+    struct stat fileStat;
+#endif
+  }; 
+
+  struct XFSWatch_t
+  {
+#ifdef _WIN32
+    HANDLE dir;
+    OVERLAPPED overlapped;
+    char buffer[4096];
+    DWORD last_bytes;
+    int ready;
+#elif defined(__linux__)
+    int fd;
+    int wd;
+    char buffer[4096];
+    int offset, len;
+#endif
+  };
+
+
 
 
   int x_fs_path_join_one(XFSPath* out, const char* segment)
@@ -386,13 +402,11 @@ extern "C"
 #endif
   }
 
-
   bool x_fs_directory_create_recursive(const char* path)
   {
     size_t length = strlen(path);
     if (length >= x_fs_PATH_MAX_LENGTH)
     {
-      xlog_error("XFSPath is too long (%zu). Maximum size is %d. - '%s'", length, x_fs_PATH_MAX_LENGTH, path);
       return false;
     }
 
@@ -559,23 +573,6 @@ extern "C"
     free(dir_handle);
   }
 
-
-  struct XFSWatch_t
-  {
-#ifdef _WIN32
-    HANDLE dir;
-    OVERLAPPED overlapped;
-    char buffer[4096];
-    DWORD last_bytes;
-    int ready;
-#elif defined(__linux__)
-    int fd;
-    int wd;
-    char buffer[4096];
-    int offset, len;
-#endif
-  };
-
   XFSWatch* x_fs_watch_open(const char* path)
   {
     if (!path) return NULL;
@@ -719,7 +716,6 @@ extern "C"
     return count;
   }
 
-
   size_t x_fs_get_temp_folder(XFSPath* out)
   {
 #ifdef _WIN32
@@ -727,7 +723,6 @@ extern "C"
     DWORD path_len = GetTempPathA((DWORD) x_fs_PATH_MAX_LENGTH, out->buf);
     if (path_len == 0 || path_len > x_fs_PATH_MAX_LENGTH)
     {
-      xlog_error("Failed to get temp folder path", 0);
       return -1;
     }
     out->length = path_len;
@@ -742,7 +737,6 @@ extern "C"
     if (strlen(tmp_dir) >= x_fs_PATH_MAX_LENGTH)
 
     {
-      xlog_error("Buffer size too small for temp folder path\n", 0);
       return -1;
     }
     x_fs_path(out, tmp_dir);
@@ -750,10 +744,6 @@ extern "C"
 
     return out->length;
   }
-
-  // --------------------------------------------------------------------------
-  // XFSPath functions
-  // --------------------------------------------------------------------------
 
   static inline int is_path_separator(char c)
   {
@@ -1034,10 +1024,10 @@ extern "C"
     return x_fs_path_is_absolute_native_cstr(x_fs_path_cstr(path));
   }
 
-  static inline int x_fs_path_eq_cstr_cstr(const char* a, const char* b)
+  static inline bool x_fs_path_eq_cstr_cstr(const char* a, const char* b)
   {
     if (!a || !b)
-      return 1;
+      return false;
 
     while (*a && *b)
     {
@@ -1053,26 +1043,26 @@ extern "C"
     while (*a && is_path_separator(*a)) ++a;
     while (*b && is_path_separator(*b)) ++b;
 
-    return (*a == '\0' && *b == '\0') ? 0 : 1;
+    return (*a == '\0' && *b == '\0');
   }
 
-  int x_fs_path_eq(const XFSPath* path_a, const XFSPath* path_b)
+  bool x_fs_path_eq(const XFSPath* path_a, const XFSPath* path_b)
   {
     if (path_a->buf == NULL && path_b->buf == NULL)
-      return 1;
+      return false;
 
     if (path_a->length == 0 && path_b->length == 0)
-      return 1;
+      return false;
 
     const char* a = &path_a->buf[0];
     const char* b = &path_b->buf[0];
     return x_fs_path_eq_cstr_cstr(a, b);
   }
 
-  int x_fs_path_eq_cstr(const XFSPath* path_a, const char* path_b)
+  bool x_fs_path_eq_cstr(const XFSPath* path_a, const char* path_b)
   {
     if (path_a->buf == NULL && path_b == NULL)
-      return 1;
+      return false;
 
     const char* a = &(path_a->buf[0]);
     return x_fs_path_eq_cstr_cstr(a, path_b);
