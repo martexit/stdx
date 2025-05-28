@@ -94,6 +94,4 @@ int main()
   };
 
   return stdx_run_tests(tests, sizeof(tests) / sizeof(tests[0]));
-
-  return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
 }
