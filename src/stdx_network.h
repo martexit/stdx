@@ -33,6 +33,13 @@ extern "C"
 {
 #endif
 
+
+#define STDX_NETWORK_VERSION_MAJOR 1
+#define STDX_NETWORK_VERSION_MINOR 0
+#define STDX_NETWORK_VERSION_PATCH 0
+
+#define STDX_IO_VERSION (STDX_NETWORK_VERSION_MAJOR * 10000 + STDX_NETWORK_VERSION_MINOR * 100 + STDX_NETWORK_VERSION_PATCH)
+
 #include <stdint.h>
 #include <stdint.h>
 #include <stdbool.h>
