@@ -34,7 +34,6 @@ extern "C"
 
 #define STDX_ARENA_VERSION (STDX_ARENA_VERSION_MAJOR * 10000 + STDX_ARENA_VERSION_MINOR * 100 + STDX_ARENA_VERSION_PATCH)
 
-#include <stdint.h>
 
 #ifdef STDX_IMPLEMENTATION_ARENA
 #ifndef STDX_IMPLEMENTATION_ALLOCATOR
@@ -43,6 +42,8 @@ extern "C"
 #endif
 #endif
 #include <stdx_allocator.h>
+
+#include <stdint.h>
 
   typedef struct XArenaChunk_t XArenaChunk;
   typedef struct XArena_t  XArena;
