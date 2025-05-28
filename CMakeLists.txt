@@ -68,6 +68,7 @@ create_test(TARGET test_filesystem SOURCES tests/test_filesystem.c)
 create_test(TARGET test_threading SOURCES tests/test_threading.c)
 create_test(TARGET test_threadpool SOURCES tests/test_threadpool.c)
 create_test(TARGET test_network SOURCES tests/test_network.c)
+create_test(TARGET test_io SOURCES tests/test_io.c)
 
 # Create a custom target that depends on all individual test targets
 get_property(_all_test_bins GLOBAL PROPERTY STDX_ALL_TEST_BINS)
