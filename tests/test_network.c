@@ -91,9 +91,16 @@ int test_multicast_ipv4()
 
 int test_multicast_ipv6()
 {
+  // NOTE(marciovmf): For this test we use the firt available network adapter. Might not work on all systems.
+  // TODO(marciovmf): Improve this test so it finds an adapter that can actually join an IPV6 multicast group
+  XNetAdapterInfo info = {0};
+  XNetAdapter adapter = {0};
+  ASSERT_TRUE(x_net_list_adapters(&adapter, 1));
+  ASSERT_TRUE(x_net_get_adapter_info(adapter.name, &info));
+  unsigned int ifindex = info.ifindex;
+
   XSocket sock = x_net_socket_udp6();
   ASSERT_TRUE(x_net_socket_is_valid(sock));
-  unsigned int ifindex = 9;//  x_net_get_ipv6_multicast_ifindex();
   ASSERT_TRUE(x_net_join_multicast_ipv6(sock, "ff01::1", ifindex));
   ASSERT_TRUE(x_net_leave_multicast_ipv6(sock, "ff01::1", ifindex));
   x_net_close(sock);
