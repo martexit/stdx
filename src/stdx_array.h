@@ -95,7 +95,7 @@ extern "C" {
       arr->array = realloc(arr->array, arr->capacity * arr->elementSize);
       if (!arr->array)
       {
-        xlog_error("Memory allocation failed");
+        x_log_error("Memory allocation failed");
       }
     }
 
@@ -112,7 +112,7 @@ extern "C" {
 
     if (index > arr->size)
     {
-      xlog_error("Index out of bounds");
+      x_log_error("Index out of bounds");
       return;
     }
 
@@ -139,7 +139,7 @@ extern "C" {
     ASSERT(arr->capacity > 0);
     if (index >= arr->size)
     {
-      xlog_error("Index out of bounds");
+      x_log_error("Index out of bounds");
       return NULL;
     }
 
@@ -162,7 +162,7 @@ extern "C" {
 
     if (start >= arr->size || end >= arr->size || start > end)
     {
-      xlog_error("Invalid range %d - %d on array of size %d", start, end, arr->size);
+      x_log_error("Invalid range %d - %d on array of size %d", start, end, arr->size);
       return;
     }
 

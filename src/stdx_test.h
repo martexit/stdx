@@ -5,7 +5,7 @@
  *
  * Features:
  *   - Lightweight, self-contained C test runner
- *   - Colored PASS/FAIL output using xlog
+ *   - Colored PASS/FAIL output using x_log
  *   - Assertion macros for booleans, equality, floats
  *   - Signal handling for crash diagnostics (SIGSEGV, SIGABRT, etc.)
  *
@@ -67,14 +67,14 @@ extern "C" {
 #define STDX_TEST_FAIL -1 
 #endif
 
-#define XLOG_GREEN(msg, ...)  xlog_raw(XLOG_LEVEL_INFO, XLOG_COLOR_GREEN, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
-#define XLOG_WHITE(msg, ...)  xlog_raw(XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
-#define XLOG_RED(msg, ...)    xlog_raw(XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
+#define XLOG_GREEN(msg, ...)  x_log_raw(XLOG_LEVEL_INFO, XLOG_COLOR_GREEN, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
+#define XLOG_WHITE(msg, ...)  x_log_raw(XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
+#define XLOG_RED(msg, ...)    x_log_raw(XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
 
 // Original macros without message and format string support
 #define ASSERT_TRUE(expr) do { \
   if (!(expr)) { \
-    xlog_error("\t%s:%d: Assertion failed: %s\n", __FILE__, __LINE__, (#expr)); \
+    x_log_error("\t%s:%d: Assertion failed: %s\n", __FILE__, __LINE__, (#expr)); \
     return 1; \
   } \
 } while (0)
@@ -83,7 +83,7 @@ extern "C" {
 
 #define ASSERT_EQ(actual, expected) do { \
   if ((actual) != (expected)) { \
-    xlog_error("\t%s:%d: Assertion failed: %s == %s", __FILE__, __LINE__, #actual, #expected); \
+    x_log_error("\t%s:%d: Assertion failed: %s == %s", __FILE__, __LINE__, #actual, #expected); \
     return 1; \
   } \
 } while (0)
@@ -91,14 +91,14 @@ extern "C" {
 #define STDX_TEST_FLOAT_EPSILON 0.1f
 #define ASSERT_FLOAT_EQ(actual, expected) do { \
   if (fabs((actual) - (expected)) > STDX_TEST_FLOAT_EPSILON) { \
-    xlog_error("\t%s:%d: Assertion failed: %s == %s", __FILE__, __LINE__, #actual, #expected); \
+    x_log_error("\t%s:%d: Assertion failed: %s == %s", __FILE__, __LINE__, #actual, #expected); \
     return 1; \
   } \
 } while (0)
 
 #define ASSERT_NEQ(actual, expected) do { \
   if ((actual) == (expected)) { \
-    xlog_error("\t%s:%d: Assertion failed: %s != %s", __FILE__, __LINE__, #actual, #expected); \
+    x_log_error("\t%s:%d: Assertion failed: %s != %s", __FILE__, __LINE__, #actual, #expected); \
     return 1; \
   } \
 } while (0)
@@ -132,7 +132,7 @@ static void x_test_internalOnSignal(int signal)
 
   fflush(stderr);
   fflush(stdout);
-  xlog_error("\n[!!!!]  Test Crashed! %s", signalName);
+  x_log_error("\n[!!!!]  Test Crashed! %s", signalName);
 }
 
 int stdx_run_tests(STDXTestCase* tests, unsigned int num_tests)
